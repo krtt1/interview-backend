@@ -1,0 +1,33 @@
+const { DataTypes } = require('sequelize');
+const sequelize = require('../config/database');
+
+// ตารางสำหรับเก็บหลักสูตร/ประสบการณ์ที่ผ่าน (เลือกได้มากกว่า 1 ข้อ)
+const CapacityTrainingCourses = sequelize.define('tb_capacity_training_courses', {
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true,
+    allowNull: false
+  },
+  employee_id: {
+    type: DataTypes.STRING(13),
+    allowNull: false,
+    references: {
+      model: 'tb_employee',
+      key: 'id'
+    }
+  },
+  course_name: {
+    type: DataTypes.STRING(500),
+    allowNull: false,
+    comment: 'ชื่อหลักสูตร/ประสบการณ์'
+  }
+}, {
+  tableName: 'tb_capacity_training_courses',
+  timestamps: true,
+  createdAt: 'created_at',
+  updatedAt: 'updated_at',
+  underscored: true
+});
+
+module.exports = CapacityTrainingCourses;

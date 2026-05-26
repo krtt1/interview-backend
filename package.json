@@ -1,0 +1,34 @@
+{
+  "name": "odpc1",
+  "version": "1.0.0",
+  "description": "ODPC1 - Backend API",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon index.js",
+    "start": "node index.js",
+    "reset:db": "node scripts/resetDatabase.js",
+    "seed:mock": "node scripts/seedMockData.js",
+    "create:user": "node scripts/createUser.js"
+  },
+  "keywords": [
+    "odpc1",
+    "backend",
+    "api"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "sequelize": "^6.35.2",
+    "mysql2": "^3.6.5",
+    "dotenv": "^16.3.1",
+    "cors": "^2.8.5",
+    "multer": "^1.4.5-lts.1",
+    "exceljs": "^4.3.0",
+    "bcrypt": "^5.1.1",
+    "jsonwebtoken": "^9.1.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}

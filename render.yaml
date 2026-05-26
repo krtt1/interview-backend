@@ -1,0 +1,31 @@
+# Render.com Configuration
+# วางไฟล์นี้ที่ root ของโปรเจค
+
+services:
+  # Backend API
+  - type: web
+    name: odpc1-backend
+    env: node
+    region: singapore
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3011
+      - key: DB_DIALECT
+        value: postgres
+      # เพิ่ม environment variables อื่นๆ ใน Render Dashboard
+    healthCheckPath: /
+    autoDeploy: true
+
+databases:
+  # PostgreSQL Database
+  - name: odpc1-db
+    databaseName: odpc1_db
+    user: odpc1_user
+    region: singapore
+    plan: free
+    ipAllowList: []
