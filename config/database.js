@@ -4,10 +4,11 @@ const { Sequelize } = require('sequelize');
 // ตรวจสอบว่ามี MYSQL_PUBLIC_URL หรือไม่
 if (!process.env.MYSQL_PUBLIC_URL) {
   console.error('❌ MYSQL_PUBLIC_URL is not defined in environment variables');
-  process.exit(1);
+  console.error('⚠️ Server will start but database operations will fail');
+  // ไม่ exit ให้ server ยังทำงานได้
 }
 
-const sequelize = new Sequelize(process.env.MYSQL_PUBLIC_URL, {
+const sequelize = new Sequelize(process.env.MYSQL_PUBLIC_URL || 'mysql://root:@localhost:3306/odpc1', {
   dialect: "mysql",
   logging: process.env.NODE_ENV === 'production' ? false : console.log,
   

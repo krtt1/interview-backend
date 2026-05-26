@@ -27,7 +27,8 @@ async function initializeDB() {
 
   } catch (error) {
     console.error('❌ DB Connect Error:', error.message);
-    process.exit(1);
+    console.error('⚠️ Server will continue running without database');
+    // ไม่ exit ให้ server ยังทำงานได้
   }
 }
 
