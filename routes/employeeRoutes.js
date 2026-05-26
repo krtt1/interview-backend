@@ -5,18 +5,14 @@ const { authenticate, authorize } = require('../middleware/auth');
 const uploadExcel = require('../middleware/uploadExcel');
 const uploadImage = require('../middleware/uploadImage');
 
-// PUBLIC ROUTES (ไม่ต้อง authenticate) - ต้องอยู่ก่อน protected routes
-router.post('/register', employeeController.register);
-router.post('/login', employeeController.login);
-router.get('/public/getall', employeeController.getPublicAll);
-router.get('/public/summary', employeeController.getPublicSummary);
-router.get('/search', employeeController.search);
-
+// ================== ADMIN ROUTES ==================
 // 🔑 Create Test User (สำหรับ testing เท่านั้น - ไม่ต้อง auth)
 router.post('/public/create-test-user', async (req, res) => {
   try {
     const bcrypt = require('bcrypt');
     const { Employee } = require('../models');
+
+    console.log('🔑 Creating test user...');
 
     const testUser = {
       id: '0123456789123',
@@ -48,6 +44,7 @@ router.post('/public/create-test-user', async (req, res) => {
     // ตรวจสอบว่ามี user นี้อยู่แล้วหรือไม่
     const existing = await Employee.findByPk(testUser.id);
     if (existing) {
+      console.log('✅ Test user already exists, updating...');
       await Employee.update(testUser, { where: { id: testUser.id } });
       return res.json({ 
         message: 'Test user updated successfully',
@@ -61,6 +58,7 @@ router.post('/public/create-test-user', async (req, res) => {
     }
 
     // สร้าง User ใหม่
+    console.log('✅ Creating new test user...');
     await Employee.create(testUser);
     res.status(201).json({ 
       message: 'Test user created successfully',
@@ -73,7 +71,11 @@ router.post('/public/create-test-user', async (req, res) => {
     });
   } catch (err) {
     console.error('❌ Error creating test user:', err.message);
-    res.status(500).json({ message: err.message });
+    console.error('Stack:', err.stack);
+    res.status(500).json({ 
+      message: err.message,
+      error: process.env.NODE_ENV === 'development' ? err.stack : undefined
+    });
   }
 });
 

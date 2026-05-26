@@ -17,21 +17,17 @@ const capacityRoutes = require('./routes/capacityRoutes');
 // ================= DB CONNECTION TEST =================
 async function initializeDB() {
   try {
-
     await sequelize.authenticate();
     console.log('✅ Database connected successfully');
-
-    // ⭐ เพิ่มตรงนี้
     await sequelize.sync({ alter: false, force: false });
     console.log('✅ Tables synced successfully');
-
   } catch (error) {
-    console.error('❌ DB Connect Error:', error.message);
-    console.error('⚠️ Server will continue running without database');
-    // ไม่ exit ให้ server ยังทำงานได้
+    console.error('⚠️ DB Connect Error:', error.message);
+    console.warn('⚠️ Server running in offline mode - database operations will fail');
   }
 }
 
+// ไม่ต้อง await ให้ server start ได้เลย
 initializeDB();
 
 // ================= APP INIT =================
