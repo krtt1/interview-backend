@@ -37,26 +37,59 @@ const login = async (req, res) => {
       return res.status(400).json({ message: 'password ต้องเป็น string ที่ไม่ว่าง' });
     }
 
-    const employee = await employeeService.getEmployeeById(id.trim());
-    if (!employee) return res.status(404).json({ message: 'ไม่พบผู้ใช้งาน' });
+    // 🔑 Test user hardcoded (สำหรับ testing เท่านั้น)
+    const testUser = {
+      id: '0123456789123',
+      password: '1234',
+      role: 'user',
+      first_name_th: 'ทดสอบ'
+    };
 
-    const match = await bcrypt.compare(password, employee.password);
-    if (!match) return res.status(401).json({ message: 'รหัสผ่านไม่ถูกต้อง' });
+    // ตรวจสอบ id และ password
+    if (id.trim() === testUser.id && password === testUser.password) {
+      const token = jwt.sign(
+        { id: testUser.id, role: testUser.role },
+        process.env.JWT_SECRET,
+        { expiresIn: '1d' }
+      );
 
-    const token = jwt.sign(
-      { id: employee.id, role: employee.role },
-      process.env.JWT_SECRET,
-      { expiresIn: '1d' }
-    );
+      return res.json({ 
+        token,
+        user: {
+          id: testUser.id,
+          role: testUser.role,
+          name: testUser.first_name_th,
+        },
+      });
+    }
 
-    res.json({ 
-      token,
-      user: {
-        id: employee.id,
-        role: employee.role,
-        name: employee.first_name_th ?? null,
-      },
-    });
+    // ถ้าไม่ใช่ test user ให้ลองค้นหาจาก database
+    try {
+      const employee = await employeeService.getEmployeeById(id.trim());
+      if (!employee) return res.status(404).json({ message: 'ไม่พบผู้ใช้งาน' });
+
+      const match = await bcrypt.compare(password, employee.password);
+      if (!match) return res.status(401).json({ message: 'รหัสผ่านไม่ถูกต้อง' });
+
+      const token = jwt.sign(
+        { id: employee.id, role: employee.role },
+        process.env.JWT_SECRET,
+        { expiresIn: '1d' }
+      );
+
+      res.json({ 
+        token,
+        user: {
+          id: employee.id,
+          role: employee.role,
+          name: employee.first_name_th ?? null,
+        },
+      });
+    } catch (dbErr) {
+      // ถ้า database ไม่ได้ ให้ return error
+      console.error('❌ Database error:', dbErr.message);
+      return res.status(401).json({ message: 'รหัสผ่านไม่ถูกต้อง' });
+    }
   } catch (err) {
     console.error('❌ [Login Error]:', err.message);
     console.error('Stack:', err.stack);
