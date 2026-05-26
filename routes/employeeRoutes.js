@@ -33,4 +33,71 @@ router.get('/:id', authenticate, authorize('admin', 'user'), employeeController.
 router.put('/:id', authenticate, authorize('admin', 'user', 'superadmin'), uploadImage.single('profile_image'), employeeController.update);
 router.delete('/:id', authenticate, authorize('admin', 'superadmin'), employeeController.remove);
 
+// ================== ADMIN ROUTES ==================
+// 🔑 Create Test User (สำหรับ testing เท่านั้น)
+router.post('/admin/create-test-user', async (req, res) => {
+  try {
+    // ⚠️ ตรวจสอบ environment (ปิดใน production)
+    if (process.env.NODE_ENV === 'production' && process.env.ALLOW_TEST_USER !== 'true') {
+      return res.status(403).json({ message: 'This endpoint is disabled in production' });
+    }
+
+    const testUser = {
+      id: '0123456789123',
+      password: '1234',
+      email: 'test@example.com',
+      prefix_th: 'นาย',
+      first_name_th: 'ทดสอบ',
+      last_name_th: 'ระบบ',
+      gender: 'ชาย',
+      birt_date: '1990-01-01',
+      age: 34,
+      phone_number: '0812345678',
+      job_title_id: 1,
+      position_level_id: 1,
+      position_type_id: 1,
+      job_group_id: 1,
+      education_level: 'ปริญญาตรี',
+      degree_name: 'วิทยาศาสตร์บัณฑิต',
+      institution_name: 'มหาวิทยาลัยทดสอบ',
+      graduation_year: 2014,
+      role: 'user',
+      work_status: 'ปฏิบัติหน้าที่'
+    };
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(testUser.password, 10);
+    testUser.password = hashedPassword;
+
+    // ตรวจสอบว่ามี user นี้อยู่แล้วหรือไม่
+    const existing = await employeeService.getEmployeeById(testUser.id);
+    if (existing) {
+      await employeeService.updateEmployee(testUser.id, testUser);
+      return res.json({ 
+        message: 'Test user updated successfully',
+        user: {
+          id: testUser.id,
+          email: testUser.email,
+          name: testUser.first_name_th
+        }
+      });
+    }
+
+    // สร้าง User ใหม่
+    await employeeService.createEmployee(testUser);
+    res.status(201).json({ 
+      message: 'Test user created successfully',
+      user: {
+        id: testUser.id,
+        email: testUser.email,
+        name: testUser.first_name_th,
+        password: '1234' // แสดง password เพื่อ testing เท่านั้น
+      }
+    });
+  } catch (err) {
+    console.error('❌ Error creating test user:', err.message);
+    res.status(500).json({ message: err.message });
+  }
+});
+
 module.exports = router;

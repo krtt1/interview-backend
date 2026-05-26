@@ -8,7 +8,8 @@
     "start": "node index.js",
     "reset:db": "node scripts/resetDatabase.js",
     "seed:mock": "node scripts/seedMockData.js",
-    "create:user": "node scripts/createUser.js"
+    "create:user": "node scripts/createUser.js",
+    "create:test-user": "node scripts/createTestUser.js"
   },
   "keywords": [
     "odpc1",
