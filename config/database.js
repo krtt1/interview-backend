@@ -14,11 +14,11 @@ const sequelize = new Sequelize(process.env.MYSQL_PUBLIC_URL || 'mysql://root:@l
   
   dialectOptions: {
     connectTimeout: 60000,
-    // เพิ่ม SSL ถ้า Railway ต้องการ
-    ssl: process.env.DB_SSL === 'true' ? {
+    // Railway requires SSL for external connections
+    ssl: {
       require: true,
       rejectUnauthorized: false
-    } : undefined
+    }
   },
 
   pool: {
@@ -50,13 +50,16 @@ sequelize.authenticate()
     console.log('✅ Database connected successfully');
     console.log('📊 Database:', sequelize.config.database);
     console.log('🔗 Host:', sequelize.config.host);
+    console.log('🔐 SSL:', 'enabled');
   })
   .catch(err => {
     console.error('❌ DB Connect Error:', err.message);
     if (err.parent) {
       console.error('Parent Error Code:', err.parent.code);
       console.error('Parent Error:', err.parent.message);
+      console.error('SQL State:', err.parent.sqlState);
     }
+    console.error('Connection String Format:', process.env.MYSQL_PUBLIC_URL ? 'mysql://root:***@host:port/db' : 'NOT SET');
     // ไม่ exit ทันที ให้ retry
   });
 
