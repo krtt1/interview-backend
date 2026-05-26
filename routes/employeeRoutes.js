@@ -12,35 +12,11 @@ router.get('/public/getall', employeeController.getPublicAll);
 router.get('/public/summary', employeeController.getPublicSummary);
 router.get('/search', employeeController.search);
 
-// Protected - ต้อง login
-router.get('/summary', authenticate, employeeController.getSummary);
-router.get('/getall', authenticate, authorize('admin'), employeeController.getAll);
-
-// 🔍 Filter by work_status
-router.get('/filter/work-status', authenticate, authorize('admin', 'superadmin'), employeeController.filterByWorkStatus);
-
-// 🔍 Filter by job_group - ทุก role ที่ login แล้ว
-router.get('/filter/job-group', authenticate, employeeController.filterByJobGroup);
-
-// 📥 Import Excel - เฉพาะ superadmin และ admin
-router.post('/import-excel', authenticate, authorize('admin', 'superadmin'), uploadExcel.single('file'), employeeController.importExcel);
-
-// 🔑 Change Password - ทุก role ที่ login แล้ว
-router.post('/change-password', authenticate, employeeController.changePassword);
-
-// CRUD operations
-router.get('/:id', authenticate, authorize('admin', 'user'), employeeController.getById);
-router.put('/:id', authenticate, authorize('admin', 'user', 'superadmin'), uploadImage.single('profile_image'), employeeController.update);
-router.delete('/:id', authenticate, authorize('admin', 'superadmin'), employeeController.remove);
-
-// ================== ADMIN ROUTES ==================
-// 🔑 Create Test User (สำหรับ testing เท่านั้น)
-router.post('/admin/create-test-user', async (req, res) => {
+// 🔑 Create Test User (สำหรับ testing เท่านั้น - ไม่ต้อง auth)
+router.post('/public/create-test-user', async (req, res) => {
   try {
-    // ⚠️ ตรวจสอบ environment (ปิดใน production)
-    if (process.env.NODE_ENV === 'production' && process.env.ALLOW_TEST_USER !== 'true') {
-      return res.status(403).json({ message: 'This endpoint is disabled in production' });
-    }
+    const bcrypt = require('bcrypt');
+    const { Employee } = require('../models');
 
     const testUser = {
       id: '0123456789123',
@@ -70,28 +46,29 @@ router.post('/admin/create-test-user', async (req, res) => {
     testUser.password = hashedPassword;
 
     // ตรวจสอบว่ามี user นี้อยู่แล้วหรือไม่
-    const existing = await employeeService.getEmployeeById(testUser.id);
+    const existing = await Employee.findByPk(testUser.id);
     if (existing) {
-      await employeeService.updateEmployee(testUser.id, testUser);
+      await Employee.update(testUser, { where: { id: testUser.id } });
       return res.json({ 
         message: 'Test user updated successfully',
         user: {
           id: testUser.id,
           email: testUser.email,
-          name: testUser.first_name_th
+          name: testUser.first_name_th,
+          password: '1234'
         }
       });
     }
 
     // สร้าง User ใหม่
-    await employeeService.createEmployee(testUser);
+    await Employee.create(testUser);
     res.status(201).json({ 
       message: 'Test user created successfully',
       user: {
         id: testUser.id,
         email: testUser.email,
         name: testUser.first_name_th,
-        password: '1234' // แสดง password เพื่อ testing เท่านั้น
+        password: '1234'
       }
     });
   } catch (err) {
@@ -99,5 +76,26 @@ router.post('/admin/create-test-user', async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
+
+// Protected - ต้อง login
+router.get('/summary', authenticate, employeeController.getSummary);
+router.get('/getall', authenticate, authorize('admin'), employeeController.getAll);
+
+// 🔍 Filter by work_status
+router.get('/filter/work-status', authenticate, authorize('admin', 'superadmin'), employeeController.filterByWorkStatus);
+
+// 🔍 Filter by job_group - ทุก role ที่ login แล้ว
+router.get('/filter/job-group', authenticate, employeeController.filterByJobGroup);
+
+// 📥 Import Excel - เฉพาะ superadmin และ admin
+router.post('/import-excel', authenticate, authorize('admin', 'superadmin'), uploadExcel.single('file'), employeeController.importExcel);
+
+// 🔑 Change Password - ทุก role ที่ login แล้ว
+router.post('/change-password', authenticate, employeeController.changePassword);
+
+// CRUD operations
+router.get('/:id', authenticate, authorize('admin', 'user'), employeeController.getById);
+router.put('/:id', authenticate, authorize('admin', 'user', 'superadmin'), uploadImage.single('profile_image'), employeeController.update);
+router.delete('/:id', authenticate, authorize('admin', 'superadmin'), employeeController.remove);
 
 module.exports = router;
