@@ -5,7 +5,16 @@ const { authenticate, authorize } = require('../middleware/auth');
 const uploadExcel = require('../middleware/uploadExcel');
 const uploadImage = require('../middleware/uploadImage');
 
-// ================== ADMIN ROUTES ==================
+// ================== PUBLIC ROUTES (ไม่ต้อง auth) ==================
+// 🔑 Login - Public endpoint
+router.post('/login', employeeController.login);
+
+// 👥 Get all employees - Public endpoint
+router.get('/public/all', employeeController.getPublicAll);
+
+// 📊 Get employee summary - Public endpoint
+router.get('/public/summary', employeeController.getPublicSummary);
+
 // 🔑 Create Test User (สำหรับ testing เท่านั้น - ไม่ต้อง auth)
 router.post('/public/create-test-user', async (req, res) => {
   try {
