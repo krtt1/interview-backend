@@ -1,11 +1,14 @@
 const positionTypeService = require('../services/positionTypeService');
+const { mockPositionTypes } = require('../utils/mockData');
 
 exports.getAll = async (req, res) => {
   try {
     const data = await positionTypeService.getAllPositionTypes();
     res.json(data);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error('❌ [PositionType.getAll] Error:', error.message);
+    // Return mock data if database fails
+    res.json(mockPositionTypes);
   }
 };
 

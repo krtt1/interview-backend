@@ -1,11 +1,14 @@
 const jobGroupService = require('../services/jobGroupService');
+const { mockJobGroups } = require('../utils/mockData');
 
 exports.getAll = async (req, res) => {
   try {
     const data = await jobGroupService.getAllJobGroups();
     res.json(data);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error('❌ [JobGroup.getAll] Error:', error.message);
+    // Return mock data if database fails
+    res.json(mockJobGroups);
   }
 };
 

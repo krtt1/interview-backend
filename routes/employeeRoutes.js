@@ -9,8 +9,9 @@ const uploadImage = require('../middleware/uploadImage');
 // 🔑 Login - Public endpoint
 router.post('/login', employeeController.login);
 
-// 👥 Get all employees - Public endpoint
+// 👥 Get all employees - Public endpoint (both paths for compatibility)
 router.get('/public/all', employeeController.getPublicAll);
+router.get('/public/getall', employeeController.getPublicAll);
 
 // 📊 Get employee summary - Public endpoint
 router.get('/public/summary', employeeController.getPublicSummary);

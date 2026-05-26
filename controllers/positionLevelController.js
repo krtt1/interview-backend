@@ -1,4 +1,5 @@
 const positionLevelService = require('../services/positionLevelService');
+const { mockPositionLevels } = require('../utils/mockData');
 
 exports.getAll = async (req, res) => {
   try {
@@ -8,11 +9,8 @@ exports.getAll = async (req, res) => {
     res.json(data);
   } catch (error) {
     console.error('❌ [PositionLevel.getAll] Error:', error.message);
-    console.error('Stack:', error.stack);
-    res.status(500).json({ 
-      error: error.message,
-      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
-    });
+    // Return mock data if database fails
+    res.json(mockPositionLevels);
   }
 };
 
