@@ -130,7 +130,9 @@ app.get('/', (req, res) => {
 app.get('/api', (req, res) => {
   res.json({
     message: 'API running',
-    version: '1.0.0'
+    version: '1.0.0',
+    timestamp: new Date().toISOString(),
+    deployed: '2026-05-26'
   });
 });
 
@@ -188,6 +190,8 @@ app.listen(PORT, '0.0.0.0', () => {
   console.log(`📡 Health Check: /`);
 
   console.log(`📡 API Base: /api`);
+
+  console.log(`📦 Version: ${new Date().toISOString()}`);
 
 });
 
