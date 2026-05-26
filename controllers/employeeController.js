@@ -132,11 +132,11 @@ const getPublicAll = async (req, res) => {
       work_status: emp.work_status
     }));
     
-    res.json(publicData);
+    res.status(200).json(publicData);
   } catch (err) {
     console.error('❌ [getPublicAll] Error:', err.message);
     // Return empty array if database fails
-    res.json([]);
+    res.status(200).json([]);
   }
 };
 
@@ -374,12 +374,12 @@ const getPublicSummary = async (req, res) => {
     console.log('📊 [getPublicSummary] Starting...');
     const data = await employeeService.getEmployeeSummary();
     console.log('✅ [getPublicSummary] Success:', JSON.stringify(data));
-    res.json(data);
+    res.status(200).json(data);
   } catch (err) {
     console.error('❌ [getPublicSummary] Error:', err.message);
     // Return empty summary if database fails
     const { mockEmployeeSummary } = require('../utils/mockData');
-    res.json(mockEmployeeSummary);
+    res.status(200).json(mockEmployeeSummary);
   }
 };
 

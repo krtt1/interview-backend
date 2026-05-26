@@ -6,11 +6,11 @@ exports.getAll = async (req, res) => {
     console.log('📋 [PositionLevel.getAll] Starting...');
     const data = await positionLevelService.getAllPositionLevels();
     console.log(`✅ [PositionLevel.getAll] Found ${data.length} records`);
-    res.json(data);
+    res.status(200).json(data);
   } catch (error) {
     console.error('❌ [PositionLevel.getAll] Error:', error.message);
     // Return mock data if database fails
-    res.json(mockPositionLevels);
+    res.status(200).json(mockPositionLevels);
   }
 };
 

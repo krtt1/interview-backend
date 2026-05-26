@@ -4,11 +4,11 @@ const { mockJobTitles } = require('../utils/mockData');
 exports.getAll = async (req, res) => {
   try {
     const data = await jobTitleService.getAllJobTitles();
-    res.json(data);
+    res.status(200).json(data);
   } catch (error) {
     console.error('❌ [JobTitle.getAll] Error:', error.message);
     // Return mock data if database fails
-    res.json(mockJobTitles);
+    res.status(200).json(mockJobTitles);
   }
 };
 
