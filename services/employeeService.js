@@ -21,7 +21,13 @@ const getAllEmployees = () => Employee.findAll({
   ]
 });
 
-const getEmployeeById = (id) => Employee.findByPk(id);
+const getEmployeeById = (id) => {
+  // ✅ ตรวจสอบว่า id ไม่ใช่ undefined, null, หรือ empty string
+  if (!id || (typeof id === 'string' && id.trim() === '')) {
+    return null;
+  }
+  return Employee.findByPk(id);
+};
 
 const updateEmployee = async (id, data) => {
   if (data.password) {

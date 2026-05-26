@@ -18,11 +18,30 @@ const register = async (req, res) => {
 const login = async (req, res) => {
   try {
     const { id, password } = req.body;
-    const employee = await employeeService.getEmployeeById(id);
-    if (!employee) return res.status(404).json({ message: 'Not found' });
+
+    // ✅ ตรวจสอบว่า id และ password ถูกส่งมาหรือไม่
+    if (!id || !password) {
+      return res.status(400).json({ 
+        message: 'กรุณากรอก id และ password',
+        required: ['id', 'password']
+      });
+    }
+
+    // ✅ ตรวจสอบว่า id เป็น string ที่ไม่ว่าง
+    if (typeof id !== 'string' || id.trim() === '') {
+      return res.status(400).json({ message: 'id ต้องเป็น string ที่ไม่ว่าง' });
+    }
+
+    // ✅ ตรวจสอบว่า password เป็น string ที่ไม่ว่าง
+    if (typeof password !== 'string' || password.trim() === '') {
+      return res.status(400).json({ message: 'password ต้องเป็น string ที่ไม่ว่าง' });
+    }
+
+    const employee = await employeeService.getEmployeeById(id.trim());
+    if (!employee) return res.status(404).json({ message: 'ไม่พบผู้ใช้งาน' });
 
     const match = await bcrypt.compare(password, employee.password);
-    if (!match) return res.status(401).json({ message: 'Invalid credentials' });
+    if (!match) return res.status(401).json({ message: 'รหัสผ่านไม่ถูกต้อง' });
 
     const token = jwt.sign(
       { id: employee.id, role: employee.role },
@@ -39,7 +58,12 @@ const login = async (req, res) => {
       },
     });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    console.error('❌ [Login Error]:', err.message);
+    console.error('Stack:', err.stack);
+    res.status(500).json({ 
+      message: err.message,
+      error: process.env.NODE_ENV === 'development' ? err.stack : undefined
+    });
   }
 };
 
