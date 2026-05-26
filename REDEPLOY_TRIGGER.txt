@@ -1,0 +1,22 @@
+REDEPLOY TRIGGER
+================
+
+This file is used to trigger a redeploy on Railway.
+Railway watches for changes and automatically redeploys when code is pushed.
+
+If Railway hasn't redeployed yet, you can:
+1. Wait 2-5 minutes for automatic redeploy
+2. Or manually trigger redeploy in Railway Dashboard:
+   - Go to your Backend Service
+   - Click "Redeploy" button
+   - Or push a new commit to trigger automatic redeploy
+
+Current Status:
+- Code pushed: ✅ YES
+- Routes updated: ✅ YES
+- Controllers updated: ✅ YES
+- Mock data added: ✅ YES
+
+Waiting for Railway to redeploy...
+
+Timestamp: 2026-05-26 (current deployment)
