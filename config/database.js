@@ -14,11 +14,11 @@ const sequelize = new Sequelize(process.env.MYSQL_PUBLIC_URL || 'mysql://root:@l
   
   dialectOptions: {
     connectTimeout: 60000,
-    // Railway requires SSL for external connections
-    ssl: {
+    // SSL for Railway, optional for local
+    ssl: process.env.NODE_ENV === 'production' ? {
       require: true,
       rejectUnauthorized: false
-    }
+    } : false
   },
 
   pool: {
